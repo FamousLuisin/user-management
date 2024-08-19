@@ -12,8 +12,14 @@ import java.util.Optional;
 @Service
 public class UserService {
 
+    private final UserRepository userRepository;
+    private final PasswordEncryptionService passwordEncoder;
+
     @Autowired
-    private UserRepository userRepository;
+    public UserService(UserRepository userRepository, PasswordEncryptionService passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public User createUser(UserRegisterDTO userRegisterDTO){
 
@@ -25,6 +31,8 @@ public class UserService {
             user.setName(userRegisterDTO.name);
             user.setBirth(userRegisterDTO.birth);
             user.setEmail(userRegisterDTO.email);
+
+            userRegisterDTO.password = passwordEncoder.encryptPassword(userRegisterDTO.password);
             user.setPassword(userRegisterDTO.password);
 
             return userRepository.save(user);
@@ -40,7 +48,9 @@ public class UserService {
         if (optionalUser.isPresent()){
             User userLogin = optionalUser.get();
 
-            if (userLogin.getPassword().equals(userLoginDTO.password)){
+            boolean passwordValid = passwordEncoder.chackPassword(userLoginDTO.password, userLogin.getPassword());
+
+            if (passwordValid){
                 return userLogin;
             }
 
