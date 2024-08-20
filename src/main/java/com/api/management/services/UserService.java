@@ -1,5 +1,6 @@
 package com.api.management.services;
 
+import com.api.management.model.dto.UserUpdateDTO;
 import com.api.management.model.dto.UserLoginDTO;
 import com.api.management.model.dto.UserRegisterDTO;
 import com.api.management.model.entities.User;
@@ -60,5 +61,19 @@ public class UserService {
         }
 
         throw new RuntimeException("Email não encontrado");
+    }
+
+    public User updateUser(UserUpdateDTO userDTO){
+        User user = new User();
+
+        user.setId(userDTO.id);
+        user.setName(userDTO.name);
+        user.setBirth(userDTO.birth);
+        user.setEmail(userDTO.email);
+
+        userDTO.password = passwordEncoder.encryptPassword(userDTO.password);
+        user.setPassword(userDTO.password);
+
+        return userRepository.save(user);
     }
 }
