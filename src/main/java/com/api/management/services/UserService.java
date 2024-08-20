@@ -76,4 +76,42 @@ public class UserService {
 
         return userRepository.save(user);
     }
+
+    public User deleteUserByLogin(UserLoginDTO userLoginDTO){
+        User user = this.loginUser(userLoginDTO);
+        userRepository.delete(user);
+        return user;
+    }
+
+    public User deleteUserById(int id){
+        Optional<User> user = userRepository.findById(id);
+
+        if (user.isPresent()){
+            userRepository.deleteById(id);
+
+            return user.get();
+        } else {
+            throw new RuntimeException("Usuario não encontrado");
+        }
+
+    }
+
+    public Iterable<User> readAllUsers(){
+        return userRepository.findAll();
+    }
+
+    public Iterable<User> readUserByName(String name){
+        Iterable<User> user = userRepository.findByName(name);
+        return user;
+    }
+
+    public User readUserById(Integer id){
+        Optional<User> user = userRepository.findById(id);
+
+        if (user.isPresent()){
+            return user.get();
+        }
+
+        throw new RuntimeException("Usuario não encontrado");
+    }
 }
